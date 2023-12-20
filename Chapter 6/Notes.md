@@ -12,13 +12,13 @@ MongoDB Chapter 6 Notes
 (eun only from inside a database)
 
 CREATE COMMANDS
-- db.<collectionName>.incsertOne(newDOcument)
-- db.<collectionName>.insertMany(documentArray)
+- db.collectionName.incsertOne(newDOcument)
+- db.collectionName.insertMany(documentArray)
 
 READ COMMANDS
-- db.<collectionName>.find(filterObject) -- to read all docs
-- db.<collectionName>..fineOne(filterObject) - to read one document
-- db.<collectionName>.countDocumentts(filterObject) - show total numbers of doc
+- db.collectionName.find(filterObject) -- to read all docs
+- db.collectionName.fineOne(filterObject) - to read one document
+- db.collectionName.countDocumentts(filterObject) - show total numbers of doc
 
 --filter Object : {fieldName: {operator:value}}
 fieldName: database fields name
@@ -31,18 +31,18 @@ Cursor functions: these are applied to find() query.
 - limit(x): only gives x documents.
 
 UPDATE COMMANDS
-- db.<collectionName>.updateOne(filterObject, updateObject, options)
+- db.collectionName.updateOne(filterObject, updateObject, options)
 - update Objects = {$set : {field:value}}
 - options: {upsert: true}
 
 Upsert: Update + Insert, when we want a new info to create a new objects if no existing object matches filter queries.
 
-- db.<collectionName>.replaceOne(filterObject,updateObject)
+- db.collectionName.replaceOne(filterObject,updateObject)
 Overwrites other fields also which are not in updateObject.
 
 DELETE COMMANDS
-- db.<collectionName>.deleteOne(filterObject)
+- db.collectionName.deleteOne(filterObject)
 
 PROJECTION
 -only return selected field while returing result documents.
-- db.<collectionName>.find(filterObject,prohjectionObject) e.g {name:1, age:1, id:0} - only show name and age and don't show id.
+- db.collectionName.find(filterObject,prohjectionObject) e.g {name:1, age:1, id:0} - only show name and age and don't show id.
