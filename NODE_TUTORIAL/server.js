@@ -40,14 +40,82 @@ const json = JSON.stringify(jsonObject);
 
 const express = require("express");
 const app = express();
+const db = require('./db');
+const Person = require('./models/person');
+
+// const bodyParser = require('body-parser');
+// app.use(bodyParser.json()); //it store inside req.body
+
+app.use(express.json());
 
 app.get("/", (req,res) => {
   console.log("Hello World");
-  res.send("Welcome to my page");
+  res.send("Welcome to my Hotel page");
 });
 app.get("/momos", (req,res)=>{
   res.send("You are seeing the Momos Page");
+});
+
+app.post("/person", async (req,res) => {
+  // const data = req.body; 
+  // //lets create a person type data
+  // const newPerson = new Person(data);
+
+  // //now save newPerson in database
+  // newPerson.save((error, savePerson) => {
+  //     if(error){
+  //       console.log("Error while saving the person", error);
+  //       res.status(500).json({error: "Internal server error"});
+  //     }else {
+  //       console.log('Data saved succesfully');
+  //       res.status(200).json(savePerson);
+  //     }
+  // })
+
+  //New Method - market standard
+  try{
+    const data = req.body;
+    const newPerson = new Person(data);
+
+    const response = await newPerson.save();
+    console.log("Data saved");
+    res.status(200).json(response);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error: "Internal Server Error"});
+  }
 })
+
+//get method for getting all the person data
+app.get("/person-data", async (req,res) => {
+  try{
+    const data = await Person.find();
+    console.log("Data Fetched");
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error: "Internal Server Error"});
+  }
+});
+
 app.listen(3030, () =>{
   console.log("Server Is Running");
 });
+
+/* What is body-parser
+- bodyParser is a middlewware library for ExpressJS
+- it is used to parse an extract the body of incoming HTTP requests.
+- when a client(e.g a web browser or a mobile app) send data to a server, it. typically includes that data in the body of an HTTP request.
+- this data can be in various format, such as JSON, form data or URL encoded data. bodyParser helps parse and extract this data from the request so that you can work with it in our Express js applications.
+- bodyParser processes the request body before it reaches your route handlers, making the parsed data avaiable into the req body for further proceesing.
+- bodyPaerser.json() automatically parses the JSON data from he request body and converts it into a JS object, which is then stored in the req.body.
+*/
+
+/* CRUD operation
+CREATE, READ, UPDATE, DELETE
+
+create -> POST
+read -> GET
+update -> PUT/PATCH
+delete -> DELETE
+*/
