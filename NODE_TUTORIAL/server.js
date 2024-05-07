@@ -42,6 +42,8 @@ const express = require("express");
 const app = express();
 const db = require('./db');
 const Person = require('./models/person');
+//getting MenuItem
+const MenuItem = require('./models/MenuItem');
 
 // const bodyParser = require('body-parser');
 // app.use(bodyParser.json()); //it store inside req.body
@@ -97,6 +99,32 @@ app.get("/person-data", async (req,res) => {
     res.status(500).json({error: "Internal Server Error"});
   }
 });
+
+//POST method to add a Menu Item
+app.post("/menu", async (req, res) => {
+  try{
+    const data = req.body;
+    const newMenuItem = new MenuItem(data);
+    const response = await newMenuItem.save();
+    console.log("Data Saved");
+    res.status(200).json(response);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error: "INternal Server Error"});
+  }
+});
+
+//get the data
+app.get("/menu", async (req,res) => {
+  try{
+    const data = await MenuItem.find();
+    console.log("Data Fetched");
+    res.status(200).json(data);
+  }catch(err){
+    console.log(err);
+    res.status(500).json({error: "Internal Server Error"});
+  }
+})
 
 app.listen(3030, () =>{
   console.log("Server Is Running");
