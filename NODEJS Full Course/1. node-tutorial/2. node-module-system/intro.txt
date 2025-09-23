@@ -1,0 +1,5 @@
+-> The module system in Node.js is a fundamental mechanism for orgranizing and resuing code,
+enabling developers to create modular, maintainable, and scalable applications.
+
+-> Each file in Node.js is treated as a separate module, and the system is built around the require() function,
+which loads modules and returns their exported contents.
