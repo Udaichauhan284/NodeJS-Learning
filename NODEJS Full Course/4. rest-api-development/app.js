@@ -19,7 +19,7 @@ let books=[
     }
 ];
 
-//intor rouet
+//intro route
 app.get("/", (req, res) => {
     res.json({
         message : "Welcome to Books APIs",
