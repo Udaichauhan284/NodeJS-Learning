@@ -53,10 +53,81 @@ const getBookById = async (req, res) => {
 
 //Controller for adding the book into the DB
 const addNewBook = async (req, res) => {
-    
+    try{
+        //now read the book body from req body
+        const newBook = req.body;
+        const newlyBookCreated = await Book.create(newBook);
+        if(newlyBookCreated){
+            res.status(201).json({
+                success : true,
+                message : "Book added successfully",
+                data : newlyBookCreated,
+            });
+        }
+    }catch(err){
+        console.log(err);
+        res.status(500).json({
+            success : false,
+            message : "Something wnt wrong! Please try again",
+        });
+    }
+};
+
+const updateBook = async(req, res) => {
+    try{
+        const updateBookFormData = req.body;
+        const getCurrentId = req.params.id;
+        const updateBook = await Book.findByIdAndUpdate(getCurrentId, updateBookFormData, { new : true, });
+
+        if(!updateBook){
+            return res.status(404).json({
+                success: false,
+                message : "book is not found with this ID",
+            });
+        }
+
+        res.status(200).json({
+            success : true,
+            message : "Book Update successfully",
+            data : updateBook,
+        });
+    }catch(e){
+        console.log(e);
+        res.status(500).json({
+            success : false,
+            message : "Something went wrong! Pease try again",
+        });
+    }
+};
+
+const deleteBook = async (req, res) => {
+    try{
+        const getCurrentId = req.params.id;
+        const deleteBook = await Book.findByIdAndDelete(getCurrentId);
+        if(!deleteBook){
+            return res.status(404).json({
+                success : false,
+                message : "Book is not found with this ID",
+            });
+        }
+
+        res.status(200).json({
+            success : true,
+            data : deleteBook,
+        });
+    }catch(e){
+        console.log(e);
+        res.status(500).json({
+            success : false,
+            message : "Something went wrong! Please try again",
+        });
+    }
 };
 
 module.exports = {
     getAllBooks,
-    getBookById
-}
+    getBookById,
+    addNewBook,
+    updateBook,
+    deleteBook
+};
