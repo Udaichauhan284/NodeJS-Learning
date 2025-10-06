@@ -110,52 +110,52 @@ const loginUser = async (req, res) => {
 
 //now controller for changing the password
 const changePassword = async (req, res) => {
-  try {
-    //first get the userId who is changing the password
-    const userId = req.userInfo.userId;
+    try {
+        //first get the userId who is changing the password
+        const userId = req.userInfo.userId;
 
-    //extract old and new password
-    const { oldPassword, newPassword } = req.body;
+        //extract old and new password
+        const { oldPassword, newPassword } = req.body;
 
-    //find the user which is current logged in by the access token and userId
-    const user = await User.findById(userId);
+        //find the user which is current logged in by the access token and userId
+        const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(400).json({
+        if (!user) {
+        return res.status(400).json({
+            success: false,
+            message: "User not found",
+        });
+        }
+
+        //check if the old password is correct
+        const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+
+        if (!isPasswordMatch) {
+        return res.status(400).json({
+            success: false,
+            message: "Old Password is not correct! Please try again",
+        });
+        }
+
+        //now hash the new password
+        const salt = await bcrypt.genSalt(10);
+        const newHashedPassword = await bcrypt.hash(newPassword, salt);
+
+        //update the user password with new one
+        user.password = newHashedPassword;
+        await user.save();
+
+        res.status(200).json({
+        success: true,
+        message: "Password changed successfully",
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({
         success: false,
-        message: "User not found",
-      });
+        message: "Some error occured! Please try again",
+        });
     }
-
-    //check if the old password is correct
-    const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
-
-    if (!isPasswordMatch) {
-      return res.status(400).json({
-        success: false,
-        message: "Old Password is not correct! Please try again",
-      });
-    }
-
-    //now hash the new password
-    const salt = await bcrypt.genSalt(10);
-    const newHashedPassword = await bcrypt.hash(newPassword, salt);
-
-    //update the user password with new one
-    user.password = newHashedPassword;
-    await user.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Password changed successfully",
-    });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({
-      success: false,
-      message: "Some error occured! Please try again",
-    });
-  }
 };
 
 //now export these controller, so we can use these in routes
