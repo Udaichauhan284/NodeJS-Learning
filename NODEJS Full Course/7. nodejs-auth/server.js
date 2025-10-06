@@ -4,6 +4,7 @@ const connectToDb = require("./database/db");
 const authRoutes = require("./routes/authRoutes");
 const homeRoute = require("./routes/homeRoute");
 const adminRoute = require("./routes/adminRoute");
+const uploadImageRoutes = require("./routes/imageRoute");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoute);
 app.use("/api/admin", adminRoute);
+app.use("/api/image", uploadImageRoutes);
 
 
 //now start the server
