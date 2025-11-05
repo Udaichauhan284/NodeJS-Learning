@@ -10,13 +10,29 @@ resolving the fields that are represented in a given query. Resolvers have to
 fetch the data and transfrom it into the required format before ending it to the
 client. 
 */
-const products = require("../data/products");
+const Product = require("../models/Products");
 
 const resolvers = {
     Query: {
-        products : () => products,
-        product: (_, {id}) => products.find((item) => item.id === id),
+        products : async () =>  await Product.find({}),
+        product: async (_, {id}) => await Product.findById(id),
     },
-}
+
+    Mutation: {
+        createProduct : async (_, args) => {
+            const newlyCreateProduct = new Product(args);
+            return await newlyCreateProduct.save();
+        },
+
+        deleteProduct : async (_, {id}) => {
+            const deletedProduct = await Product.findByIdAndDelete(id);
+            return !deletedProduct;
+        },
+
+        updateProduct : async (_, {id, ...updatedFields}) => {
+            return await Product.findByIdAndUpdate(id, updatedFields, {new : true});
+        },
+    },
+};
 
 module.exports = resolvers;
