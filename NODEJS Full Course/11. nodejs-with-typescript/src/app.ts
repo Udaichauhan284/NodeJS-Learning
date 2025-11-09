@@ -1,31 +1,69 @@
-console.log('Welcome to Nodejs with typescript');
+//Here we have to use import and export, because we are using the es6
 
-//Basic Type
-let isDone : Boolean = true; //Boolean type
-let num : number = 10; //Number type
-let str : string = "Hello"; //string type
-let list : number[] = [1,2,3]; //array of number
-let names : string[] = ["udai", "sandesh"]; //array of string
+import express, {Express, Request, Response, NextFunction} from "express";
+import {IUser, User} from "./models/User";
 
-//also we can do like this way
-let products : Array<string> = ['laptop', 'mobile', 'fridge'];
+const app : Express = express();
+const port = 3000;
 
-let randomType : any = 4; //this will work
-randomType = "string hai"; //still work
-randomType = true; //still work for boolean
-randomType = ["udai", 89]; //still work for multiple types
+//use of middleware
+app.use(express.json());
 
-let notValue = undefined; //or
-let notValu1 : undefined = undefined;
+//middleware -> add startTime to request
+interface CustomRequest extends Request{
+    startTime?:  number;
+}
 
-let nullValue = null; //OR
-let nullValue1 : null = null;
+app.use((req : CustomRequest, res : Response, next : NextFunction) => {
+    req.startTime = Date.now(),
+    next();
+});
 
-enum Color {
-    Red, Green, Blue
-}; //we have predefined the color enum that when someone use this, they only have these 3 options
+/* req -> type Request (paras, ResBody, ReqBody, ReqQuery, someLocals)
+*/
+app.get("/", (req : Request, res : Response) => {
+    res.send('Hello Nodejs with Typescript');
+});
 
-let d : Color = Color.Blue; //or green or Red
+//creating route for IUser, User
+app.get("/users", async (req: Request, res: Response) => {
+    try{
+        const users : IUser[] = await User.find();
+        console.log('this is users: ', users);
+        res.status(200).json({
+            message : "This is your data",
+            data : users
+        })
+    }catch(err){
+        res.status(400).json({message : "Some error occured!"});
+    }
+});
 
-//Tuple
-let tupleExmple : [string, number] = ["hi", 400];
+//Here creating the user property -> name and email, post route -> new user, req.body
+// -> /user/:id?name -> Request <{}, {ResBody}, {ReqBody}, {ReqQuery}, {somelocals}>
+
+//see in Request , reqBody we need to give the type of User, so for that we need to create the interface
+interface User {
+    name : String,
+    email : String,
+}
+
+app.post("/user", (req: Request<{}, {}, User>, res : Response) => {
+    //get the name and email from req.body
+    const {name, email} = req.body;
+    res.json({
+        message : `User created ${name}-${email}`,
+    });
+});
+
+//getting user based on id
+app.get("/user/:id", (req: Request<{id: String}>, res: Response) => {
+    const {id} = req.params;
+    res.json({
+        userId : id,
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Server is up and running on ${port}`);
+});
